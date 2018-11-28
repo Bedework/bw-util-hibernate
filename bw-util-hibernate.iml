@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -9,10 +9,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="bw-util-config" />
-    <orderEntry type="module" module-name="bw-util-jmx" />
-    <orderEntry type="module" module-name="bw-util-misc" />
-    <orderEntry type="module" module-name="bw-util-xml" />
+    <orderEntry type="library" name="Maven: org.bedework:bw-util-config:4.0.19" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework:bw-util-jmx:4.0.19" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework:bw-util-misc:4.0.19" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework:bw-util-xml:4.0.19" level="project" />
     <orderEntry type="library" name="Maven: org.apache.derby:derbynet:10.8.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.derby:derby:10.8.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.h2database:h2:1.4.190" level="project" />

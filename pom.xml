@@ -15,7 +15,7 @@
     <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
     <maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 
-    <bw-util.version>4.0.19-SNAPSHOT</bw-util.version>
+    <bw-util.version>4.0.19</bw-util.version>
 
     <derby.version>10.8.2.2</derby.version>
     <h2.version>1.4.190</h2.version>

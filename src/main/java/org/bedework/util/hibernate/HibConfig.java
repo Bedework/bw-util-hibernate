@@ -4,7 +4,7 @@
 package org.bedework.util.hibernate;
 
 import org.bedework.util.config.HibernateConfigBase;
-import org.bedework.util.misc.Logged;
+import org.bedework.util.logging.Logged;
 
 import org.hibernate.cfg.Configuration;
 
@@ -17,7 +17,7 @@ import java.util.Properties;
  * Date: 1/24/17
  * Time: 00:17
  */
-public class HibConfig extends Logged {
+public class HibConfig implements Logged {
   private final HibernateConfigBase config;
   
   public HibConfig(final HibernateConfigBase config) {

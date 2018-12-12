@@ -15,7 +15,8 @@
     <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
     <maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 
-    <bw-util.version>4.0.19</bw-util.version>
+    <bw-util.version>4.0.20-SNAPSHOT</bw-util.version>
+    <bw-util-logging.version>4.0.0-SNAPSHOT</bw-util-logging.version>
 
     <derby.version>10.8.2.2</derby.version>
     <h2.version>1.4.190</h2.version>
@@ -88,6 +89,12 @@
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-jmx</artifactId>
       <version>${bw-util.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-util-logging</artifactId>
+      <version>${bw-util-logging.version}</version>
     </dependency>
 
     <dependency>

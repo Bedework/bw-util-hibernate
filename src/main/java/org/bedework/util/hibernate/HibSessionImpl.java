@@ -18,7 +18,7 @@
 */
 package org.bedework.util.hibernate;
 
-import org.bedework.util.misc.Logged;
+import org.bedework.util.logging.Logged;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @author Mike Douglass douglm@rpi.edu
  */
-public class HibSessionImpl extends Logged implements HibSession {
+public class HibSessionImpl implements Logged, HibSession {
   Session sess;
   transient Transaction tx;
   boolean rolledBack;
@@ -1031,12 +1031,12 @@ public class HibSessionImpl extends Logged implements HibSession {
   private void handleException(final Throwable t,
                                final Object o) throws HibException {
     try {
-      if (getLogger().isDebugEnabled()) {
-        getLogger().debug("handleException called");
+      if (debug()) {
+        debug("handleException called");
         if (o != null) {
-          getLogger().debug(o.toString());
+          debug(o.toString());
         }
-        getLogger().error(this, t);
+        error(t);
       }
     } catch (Throwable dummy) {}
 
@@ -1109,9 +1109,6 @@ public class HibSessionImpl extends Logged implements HibSession {
    * @param t   Throwable from the rollback
    */
   private void rollbackException(final Throwable t) {
-    if (getLogger().isDebugEnabled()) {
-      getLogger().debug("HibSession: ", t);
-    }
-    getLogger().error(this, t);
+    error(t);
   }
 }

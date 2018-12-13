@@ -4,6 +4,7 @@
 package org.bedework.util.hibernate;
 
 import org.bedework.util.config.HibernateConfigBase;
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
 import org.hibernate.cfg.Configuration;
@@ -53,5 +54,20 @@ public class HibConfig implements Logged {
       
       return null;
     }
+  }
+
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
   }
 }

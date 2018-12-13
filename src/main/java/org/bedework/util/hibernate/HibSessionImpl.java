@@ -18,6 +18,7 @@
 */
 package org.bedework.util.hibernate;
 
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
 import org.hibernate.Criteria;
@@ -1110,5 +1111,20 @@ public class HibSessionImpl implements Logged, HibSession {
    */
   private void rollbackException(final Throwable t) {
     error(t);
+  }
+
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
   }
 }

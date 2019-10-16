@@ -15,7 +15,7 @@
     <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
     <maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 
-    <bw-util.version>4.0.25</bw-util.version>
+    <bw-util.version>4.0.26</bw-util.version>
     <bw-util-logging.version>4.0.4</bw-util-logging.version>
 
     <derby.version>10.8.2.2</derby.version>

@@ -18,9 +18,9 @@
 */
 package org.bedework.util.hibernate;
 
+import org.bedework.util.logging.BwLogger;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.xml.XmlEmit;
-
-import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -36,9 +36,7 @@ import javax.xml.namespace.QName;
  *
  * @param <T>
  */
-public class DumpEntity<T> {
-  private transient Logger log;
-
+public class DumpEntity<T> implements Logged {
   /** We're dumping the entire object */
   public enum DumpType {
     /** We're dumping the entire object */
@@ -428,15 +426,18 @@ public class DumpEntity<T> {
     return val.substring(3, 4).toLowerCase() + val.substring(4);
   }
 
-  protected Logger getLog() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
     }
 
-    return log;
-  }
-
-  protected void error(final String msg) {
-    getLog().error(msg);
+    return logger;
   }
 }

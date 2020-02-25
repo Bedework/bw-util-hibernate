@@ -18,8 +18,10 @@
 */
 package org.bedework.util.hibernate.derby;
 
+import org.bedework.util.logging.BwLogger;
+import org.bedework.util.logging.Logged;
+
 import org.apache.derby.drda.NetworkServerControl;
-import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 
@@ -27,9 +29,7 @@ import java.net.InetAddress;
  * @author douglm
  *
  */
-public class DerbyDb implements DerbyDbMBean {
-  private transient Logger log;
-
+public class DerbyDb implements DerbyDbMBean, Logged {
   private boolean running;
 
   protected String account = "sa";
@@ -220,36 +220,17 @@ public class DerbyDb implements DerbyDbMBean {
   }
 
   /* ====================================================================
-   *                   Protected methods
+   *                   Logged methods
    * ==================================================================== */
 
-  protected void info(final String msg) {
-    getLogger().info(msg);
-  }
+  private BwLogger logger = new BwLogger();
 
-  protected void trace(final String msg) {
-    getLogger().debug(msg);
-  }
-
-  protected void warn(final String msg) {
-    getLogger().warn(msg);
-  }
-
-  protected void error(final Throwable t) {
-    getLogger().error(t);
-  }
-
-  protected void error(final String msg) {
-    getLogger().error(msg);
-  }
-
-  /* Get a logger for messages
-   */
-  protected Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
     }
 
-    return log;
+    return logger;
   }
 }

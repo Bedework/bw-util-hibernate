@@ -20,6 +20,8 @@
     <bw-util-network.version>4.1.0</bw-util-network.version>
     <bw-util-logging.version>4.0.5</bw-util-logging.version>
 
+    <bw-util-deploy.version>4.0.28-SNAPSHOT</bw-util-deploy.version>
+
     <derby.version>10.8.2.2</derby.version>
     <h2.version>1.4.190</h2.version>
     <hibernate.version>5.2.5.Final</hibernate.version>
@@ -130,6 +132,18 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-ehcache</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.20.0-GA</version>
+    </dependency>
+
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>${servlet-api.version}</version>
@@ -145,6 +159,7 @@
         <version>2.9</version>
       </extension>
     </extensions>
+
     <plugins>
       <!-- Specify the compiler options and settings -->
       <plugin>
@@ -156,6 +171,7 @@
           <showWarnings>false</showWarnings>
         </configuration>
       </plugin>
+
       <!-- Produce source jars during the 'verify' phase -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -200,6 +216,202 @@
         <version>2.3</version>
         <configuration>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-maven-deploy-wfmodule</artifactId>
+        <version>${bw-util-deploy.version}</version>
+
+        <executions>
+          <execution>
+            <id>org.bedework.org.hibernate.core</id>
+            <phase>install</phase>
+            <goals>
+              <goal>bw-deploy-wfmodule</goal>
+            </goals>
+
+            <configuration>
+              <moduleName>org.bedework.org.hibernate.core</moduleName>
+
+              <jarResources>
+                <fileInfo>
+                  <groupId>org.hibernate</groupId>
+                  <artifactId>hibernate-core</artifactId>
+                  <version>5.2.5.Final</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.hibernate</groupId>
+                  <artifactId>hibernate-ehcache</artifactId>
+                  <version>5.2.5.Final</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.hibernate</groupId>
+                  <artifactId>hibernate-validator</artifactId>
+                  <version>5.3.6.Final</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.hibernate.javax.persistence</groupId>
+                  <artifactId>hibernate-jpa-2.1-api</artifactId>
+                  <version>1.0.0.Final</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>net.sf.ehcache</groupId>
+                  <artifactId>ehcache</artifactId>
+                  <version>2.10.3</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.javassist</groupId>
+                  <artifactId>javassist</artifactId>
+                  <version>3.20.0-GA</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>antlr</groupId>
+                  <artifactId>antlr</artifactId>
+                  <version>2.7.7</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.apache.geronimo.specs</groupId>
+                  <artifactId>geronimo-jta_1.1_spec</artifactId>
+                  <version>1.1.1</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.jboss</groupId>
+                  <artifactId>jandex</artifactId>
+                  <version>2.0.3.Final</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>com.fasterxml</groupId>
+                  <artifactId>classmate</artifactId>
+                  <version>1.3.0</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>dom4j</groupId>
+                  <artifactId>dom4j</artifactId>
+                  <version>1.6.1</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.hibernate.common</groupId>
+                  <artifactId>hibernate-commons-annotations</artifactId>
+                  <version>5.0.1.Final</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.jboss.spec.javax.interceptor</groupId>
+                  <artifactId>jboss-interceptors-api_1.1_spec</artifactId>
+                  <version>1.0.0.Beta1</version>
+                </fileInfo>
+              </jarResources>
+
+              <jarDependencies>
+                <jarDependency>
+                  <moduleName>org.bedework.org.slf4j.slf4j-api</moduleName>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-api</artifactId>
+                  <version>1.7.7</version>
+                </jarDependency>
+              </jarDependencies>
+
+              <moduleDependencies>
+                <moduleDependency>
+                  <name>org.jboss.logging</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>javax.annotation.api</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>javax.el.api</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>wildflyee.api</name>
+                </moduleDependency>
+              </moduleDependencies>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>org.bedework.util.hibernate</id>
+            <phase>install</phase>
+            <goals>
+              <goal>bw-deploy-wfmodule</goal>
+            </goals>
+
+            <configuration>
+              <moduleName>org.bedework.util.hibernate</moduleName>
+
+              <jarResources>
+                <fileInfo>
+                  <groupId>org.apache.derby</groupId>
+                  <artifactId>derbynet</artifactId>
+                  <version>10.8.2.2</version>
+                </fileInfo>
+
+                <fileInfo>
+                  <groupId>org.apache.derby</groupId>
+                  <artifactId>derby</artifactId>
+                  <version>10.8.2.2</version>
+                </fileInfo>
+              </jarResources>
+
+              <jarDependencies>
+                <jarDependency>
+                  <moduleName>org.bedework.com.fasterxml.jackson.core.annotations</moduleName>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>jackson-annotations</artifactId>
+                  <version>2.9.8</version>
+                  <type>jar</type>
+                </jarDependency>
+
+                <jarDependency>
+                  <moduleName>com.h2database.h2</moduleName>
+                  <groupId>com.h2database</groupId>
+                  <artifactId>h2</artifactId>
+                  <version>1.4.190</version>
+                </jarDependency>
+              </jarDependencies>
+
+              <moduleDependencies>
+                <moduleDependency>
+                  <name>org.bedework.logging</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>org.bedework.util.config</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>org.bedework.util.jmx</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>org.bedework.util.misc</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>org.bedework.util.xml</name>
+                </moduleDependency>
+
+                <moduleDependency>
+                  <name>org.bedework.org.hibernate.core</name>
+                </moduleDependency>
+              </moduleDependencies>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

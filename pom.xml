@@ -138,6 +138,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>5.3.6.Final</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>3.20.0-GA</version>
@@ -233,6 +239,7 @@
 
             <configuration>
               <moduleName>org.bedework.org.hibernate.core</moduleName>
+              <noArtifact>true</noArtifact>
 
               <jarResources>
                 <fileInfo>

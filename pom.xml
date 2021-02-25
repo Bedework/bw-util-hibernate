@@ -53,6 +53,13 @@
     <url>https://github.com/Bedework/bw-util-hibernate/issues</url>
   </issueManagement>
 
+  <repositories>
+    <repository>
+      <id>patched-hibernate-repo</id>
+      <url>file:${project.basedir}/repo</url>
+    </repository>
+
+  </repositories>
   <developers>
     <developer>
       <name>Mike Douglass</name>
@@ -124,17 +131,29 @@
       <version>${h2.version}</version>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate.version}</version>
-      <optional>true</optional>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>5.2.5.FinalBwPatched</version>
     </dependency>
 
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-ehcache</artifactId>
       <version>${hibernate.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -242,10 +261,13 @@
               <noArtifact>true</noArtifact>
 
               <jarResources>
+                <!-- Install the hibernate core with a small
+                     classloading patch
+                  -->
                 <fileInfo>
-                  <groupId>org.hibernate</groupId>
+                  <groupId>org.bedework</groupId>
                   <artifactId>hibernate-core</artifactId>
-                  <version>5.2.5.Final</version>
+                  <version>5.2.5.FinalBwPatched</version>
                 </fileInfo>
 
                 <fileInfo>
@@ -441,6 +463,7 @@
               </execution>
             </executions>
           </plugin>
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -458,6 +481,7 @@
               <failOnError>false</failOnError>
             </configuration>
           </plugin>
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>

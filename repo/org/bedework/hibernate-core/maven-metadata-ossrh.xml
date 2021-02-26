@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.bedework</groupId>
+  <artifactId>hibernate-core</artifactId>
+  <versioning>
+    <release>5.2.5.FinalBwPatched</release>
+    <versions>
+      <version>5.2.5.FinalBwPatched</version>
+    </versions>
+    <lastUpdated>20210224035212</lastUpdated>
+  </versioning>
+</metadata>

@@ -3,7 +3,7 @@
 
   <groupId>org.bedework</groupId>
   <artifactId>bw-util-hibernate</artifactId>
-  <version>4.0.26</version>
+  <version>4.0.27-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>bw-util-hibernate</name>
   <description>Hibernate utility classes</description>
@@ -42,7 +42,7 @@
     <connection>scm:git:git@github.com:Bedework/bw-util-hibernate.git</connection>
     <developerConnection>scm:git:git@github.com:Bedework/bw-util-hibernate.git</developerConnection>
     <url>https://github.com/Bedework/bw-util-hibernate</url>
-    <tag>bw-util-hibernate-4.0.26</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>

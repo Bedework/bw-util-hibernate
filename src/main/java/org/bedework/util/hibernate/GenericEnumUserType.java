@@ -56,10 +56,16 @@ public class GenericEnumUserType implements UserType, ParameterizedType {
   @Override
   @SuppressWarnings({ "unchecked"})
   public void setParameterValues(final Properties parameters) {
-    String enumClassName = parameters.getProperty("enumClassname");
+    final String enumClassName = parameters.getProperty("enumClassname");
     try {
-      enumClass = Class.forName(enumClassName).asSubclass(Enum.class);
-    } catch (ClassNotFoundException cfne) {
+      // enumClass = Class.forName(enumClassName).asSubclass(Enum.class);
+      enumClass = Class.forName(
+              enumClassName,
+              true,
+              Thread.currentThread()
+                    .getContextClassLoader())
+                       .asSubclass(Enum.class);
+    } catch (final ClassNotFoundException cfne) {
       throw new HibernateException("Enum class not found", cfne);
     }
 

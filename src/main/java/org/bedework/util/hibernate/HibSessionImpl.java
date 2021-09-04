@@ -186,7 +186,9 @@ public class HibSessionImpl implements Logged, HibSession {
         //if (getLogger().isDebugEnabled()) {
         //  getLogger().debug("About to comnmit");
         //}
-      if (tx != null) {
+      if ((tx != null) &&
+              !rolledBack &&
+              !tx.getRollbackOnly()) {
         tx.commit();
       }
 
@@ -231,7 +233,8 @@ public class HibSessionImpl implements Logged, HibSession {
 
   @Override
   public boolean rolledback() {
-    return rolledBack;
+    return rolledBack ||
+            ((tx != null) && tx.getRollbackOnly());
   }
 
   @Override

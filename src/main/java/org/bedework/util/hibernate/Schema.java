@@ -59,7 +59,9 @@ public class Schema {
 
       if (export) {
         targets.add(TargetType.DATABASE);
-      } else {
+      }
+
+      if (outFile != null) {
         targets.add(TargetType.SCRIPT);
       }
 

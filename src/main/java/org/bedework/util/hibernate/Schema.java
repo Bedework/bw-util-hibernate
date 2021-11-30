@@ -7,18 +7,16 @@ import org.bedework.util.jmx.InfoLines;
 
 import org.hibernate.boot.MetadataBuilder;
 import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.BootstrapServiceRegistry;
-import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.boot.spi.MetadataImplementor;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.EnumSet;
-import java.util.Properties;
 
 /** Handle the export of schemas
  * 
@@ -36,24 +34,7 @@ public class Schema {
   public static boolean execute(final InfoLines infoLines,
                                 final String outFile,
                                 final boolean export,
-                                final Properties hibConfig) {
-    return execute(infoLines, outFile, export, hibConfig, null);
-  }
-
-  /**
-   *
-   * @param infoLines for output messages
-   * @param outFile wheer to write schema
-   * @param export true to export
-   * @param hibConfig properties
-   * @param resourcePath where our cfg.xml file is - null for default
-   * @return true if ok
-   */
-  public static boolean execute(final InfoLines infoLines,
-                                final String outFile,
-                                final boolean export,
-                                final Properties hibConfig,
-                                final String resourcePath) {
+                                final HibConfig hibConfig) {
     try {
       infoLines.addLn("Started export of schema");
 
@@ -82,6 +63,7 @@ public class Schema {
         targets.add(TargetType.SCRIPT);
       }
 
+      /*
       final BootstrapServiceRegistry bsr = 
               new BootstrapServiceRegistryBuilder().build();
       final StandardServiceRegistryBuilder ssrBuilder = 
@@ -94,6 +76,14 @@ public class Schema {
       }
       ssrBuilder.applySettings(hibConfig);
 
+      final StandardServiceRegistry ssr = ssrBuilder.build();
+       */
+      final Configuration cfg =
+              hibConfig.getHibConfiguration("hibernate.cfg.xml"
+              );
+      final StandardServiceRegistryBuilder ssrBuilder =
+              cfg.getStandardServiceRegistryBuilder();
+      ssrBuilder.applySettings(cfg.getProperties());
       final StandardServiceRegistry ssr = ssrBuilder.build();
 
       se.execute(targets,
@@ -123,7 +113,7 @@ public class Schema {
   }
 
   private static MetadataImplementor buildMetadata(
-          final StandardServiceRegistry serviceRegistry) throws Exception {
+          final StandardServiceRegistry serviceRegistry) {
     final MetadataSources metadataSources = new MetadataSources(serviceRegistry );
 
     //for ( String filename : parsedArgs.hbmXmlFiles ) {

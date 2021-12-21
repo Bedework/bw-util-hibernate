@@ -14,6 +14,13 @@
   <description>Hibernate utility classes</description>
   <url>https://github.com/Bedework/bw-util-hibernate</url>
 
+  <scm>
+    <connection>scm:git:git@github.com:Bedework/bw-util-hibernate.git</connection>
+    <developerConnection>scm:git:git@github.com:Bedework/bw-util-hibernate.git</developerConnection>
+    <url>https://github.com/Bedework/bw-util-hibernate</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.bedework</groupId>

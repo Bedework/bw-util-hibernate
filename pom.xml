@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>9</version>
+    <version>10</version>
   </parent>
 
   <artifactId>bw-util-hibernate</artifactId>
-  <version>5.0.2-SNAPSHOT</version>
+  <version>5.0.2</version>
   <name>Bedework: hibernate utility</name>
 
   <description>Hibernate utility classes</description>
@@ -45,16 +45,6 @@
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-xml</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbynet</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
     </dependency>
 
     <dependency>

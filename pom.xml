@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>7</version>
+    <version>9</version>
   </parent>
 
   <artifactId>bw-util-hibernate</artifactId>
-  <version>5.0.1-SNAPSHOT</version>
+  <version>5.0.1</version>
   <name>Bedework: hibernate utility</name>
 
   <description>Hibernate utility classes</description>

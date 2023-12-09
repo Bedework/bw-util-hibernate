@@ -34,17 +34,52 @@ For full details, see [Sonatype's documentation for using Maven to publish relea
 
 ## Release Notes
 ### 4.0.19
-    * Split off from bw-util
+ * Split off from bw-util
     
 ### 4.0.20
-    * Logging changes
+ * Logging changes
   
 ### 4.0.21
-    * Dependency versions
+ * Dependency versions
  
 ### 4.0.22
-    * pom config changes
+ * pom config changes
   
 ### 4.0.23
-    * Update javadoc plugin config
-    * Remove some references to log4j
+ * Update javadoc plugin config
+ * Remove some references to log4j
+
+### 4.0.24
+* Update versions
+* Repo for patched hibernate
+
+### 4.0.25
+* Update versions
+
+### 4.0.26
+* Update versions
+* Use class loader from current thread when loading class for Enum types.
+
+### 4.0.27
+* Update versions
+
+### 4.0.28
+* Update versions
+
+### 4.0.29
+* Update versions
+
+#### 5.0.0
+* Use bedework parent
+* Update versions
+* Changes to fix hibernate schema issues.
+* Fix so that schema gets output when file is given - even if exporting to db.
+
+### 5.0.1
+* Update versions
+
+### 5.0.2
+* Update versions
+
+### 5.0.3
+* Update versions

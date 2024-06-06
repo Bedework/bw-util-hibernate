@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>bw-util-hibernate</artifactId>
-  <version>5.0.4</version>
+  <version>5.0.5-SNAPSHOT</version>
   <name>Bedework: hibernate utility</name>
 
   <description>Hibernate utility classes</description>

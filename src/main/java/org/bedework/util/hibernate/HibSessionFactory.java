@@ -24,6 +24,7 @@ import org.hibernate.cfg.Configuration;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /** Convenience class to do the actual hibernate interaction. Intended for
  * one use only.
@@ -31,65 +32,34 @@ import java.util.Properties;
  * @author Mike Douglass douglm@rpi.edu
  */
 public class HibSessionFactory {
-  private static SessionFactory sessionFactory;
-
-  private static final Object lock = new Object();
-
   /**
    * @param hibProps possibly null list of hibernate properties
    * @return the SessionFactory
    * @throws HibException on fatal error
    */
-  public static SessionFactory getSessionFactory(List<String> hibProps) throws HibException {
-    if (sessionFactory != null) {
-      return sessionFactory;
-    }
-
-    synchronized (lock) {
-      if (sessionFactory != null) {
-        return sessionFactory;
-      }
-
-      /* Get a new hibernate session factory. This is configured from an
+  public static SessionFactory getSessionFactory(
+          final List<String> hibProps) throws HibException {
+    /* Get a new hibernate session factory. This is configured from an
        * application resource hibernate.cfg.xml together with some run time values
        */
-      try {
-        Configuration conf = new Configuration();
+    try {
+      final Configuration conf = new Configuration();
 
-        /*
-        if (props != null) {
-          String cachePrefix = props.getProperty("cachePrefix");
-          if (cachePrefix != null) {
-            conf.setProperty("hibernate.cache.use_second_level_cache",
-                             props.getProperty("cachingOn"));
-            conf.setProperty("hibernate.cache.region_prefix",
-                             cachePrefix);
-          }
-        }
-        */
-        
-        if (hibProps != null) {
-          StringBuilder sb = new StringBuilder();
+      if (hibProps != null) {
+        final String sb = hibProps.stream().map(p -> p + "\n")
+                                  .collect(Collectors.joining());
 
-          for (String p: hibProps) {
-            sb.append(p);
-            sb.append("\n");
-          }
+        final Properties hprops = new Properties();
+        hprops.load(new StringReader(sb));
 
-          Properties hprops = new Properties();
-          hprops.load(new StringReader(sb.toString()));
-
-          conf.addProperties(hprops);
-        }
-
-        conf.configure();
-
-        sessionFactory = conf.buildSessionFactory();
-
-        return sessionFactory;
-      } catch (Throwable t) {
-        throw new HibException(t);
+        conf.addProperties(hprops);
       }
+
+      conf.configure();
+
+      return conf.buildSessionFactory();
+    } catch (final Throwable t) {
+      throw new HibException(t);
     }
   }
 }

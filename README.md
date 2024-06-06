@@ -83,3 +83,7 @@ For full details, see [Sonatype's documentation for using Maven to publish relea
 
 ### 5.0.3
 * Update versions
+
+### 5.0.4
+* Update versions
+* Cannot have a static variable for the session factory. Opted to remove and let callers manage that. 

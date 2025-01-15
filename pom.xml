@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>64</version>
+    <version>91-SNAPSHOT</version>
   </parent>
 
   <artifactId>bw-util-hibernate</artifactId>
@@ -50,12 +50,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
       <scope>provided</scope>
     </dependency>
 

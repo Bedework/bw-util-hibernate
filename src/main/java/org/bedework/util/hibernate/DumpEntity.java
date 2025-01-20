@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,18 +18,21 @@
 */
 package org.bedework.util.hibernate;
 
+import org.bedework.base.exc.persist.BedeworkDatabaseException;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.xml.XmlEmit;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
-/** An entity which can be dumped..
+/** An entity which can be dumped.
  *
  * @author Mike Douglass
  * @version 1.0
@@ -50,14 +53,13 @@ public class DumpEntity<T> implements Logged {
   }
 
   /** Override this if we want to optionally suppress the dump based on some
-   * attributes. This allows us to skip empty objects which occassionally turn
+   * attributes. This allows us to skip empty objects which occasionally turn
    * up.
    *
    * @return boolean true to continue with dump.
-   * @throws HibException
    */
   @NoWrap
-  public boolean hasDumpValue() throws HibException {
+  public boolean hasDumpValue() {
     return true;
   }
 
@@ -65,106 +67,124 @@ public class DumpEntity<T> implements Logged {
    *
    * @param xml
    * @param dtype
-   * @throws HibException
    */
   @NoWrap
-  public void dump(final XmlEmit xml, final DumpType dtype) throws HibException {
+  public void dump(final XmlEmit xml, final DumpType dtype) {
     dump(xml, dtype, false);
   }
 
-  /** Dump this entity as xml.
+
+  /** Dump the entire entity.
    *
-   * @param xml
-   * @param dtype
-   * @param fromCollection  true if the value is a member of a collection
-   * @throws HibException
+   * @param xml emitter
    */
   @NoWrap
-  public void dump(final XmlEmit xml, final DumpType dtype,
-                   final boolean fromCollection) throws HibException {
+  public void dump(final XmlEmit xml) {
+    dump(xml, DumpType.def, false);
+  }
+
+  /* ====================================================================
+   *                   Private XML methods
+   * ==================================================================== */
+
+  /** Dump this entity as xml.
+   *
+   * @param xml emitter
+   * @param dtype
+   * @param fromCollection  true if the value is a member of a collection
+   */
+  @NoWrap
+  public void dump(final XmlEmit xml,
+                   final DumpType dtype,
+                   final boolean fromCollection) {
     if (!hasDumpValue()) {
       return;
     }
 
-    NoDump ndCl = getClass().getAnnotation(NoDump.class);
-    Dump dCl = getClass().getAnnotation(Dump.class);
+    final NoDump ndCl = getClass().getAnnotation(NoDump.class);
+    final Dump dCl = getClass().getAnnotation(Dump.class);
 
-    boolean dumpKeyFields = dtype == DumpType.reference;
+    final boolean dumpKeyFields = dtype == DumpType.reference;
 
     ArrayList<String> noDumpMethods = null;
     ArrayList<String> firstMethods = null;
 
-    try {
-      if (ndCl != null) {
-        if (ndCl.value().length == 0) {
-          return;
-        }
-
-        noDumpMethods = new ArrayList<String>();
-        for (String m: ndCl.value()) {
-          noDumpMethods.add(m);
-        }
+    if (ndCl != null) {
+      if (ndCl.value().length == 0) {
+        return;
       }
 
-      if (!dumpKeyFields && (dCl != null) && (dCl.firstFields().length != 0)) {
-        firstMethods = new ArrayList<String>();
-        for (String f: dCl.firstFields()) {
-          firstMethods.add(methodName(f));
-        }
+      noDumpMethods = new ArrayList<>();
+      Collections.addAll(noDumpMethods, ndCl.value());
+    }
+
+    if (!dumpKeyFields && (dCl != null) && (dCl.firstFields().length != 0)) {
+      firstMethods = new ArrayList<>();
+      for (final String f: dCl.firstFields()) {
+        firstMethods.add(methodName(f));
       }
+    }
 
-      QName qn = null;
+    QName qn = null;
 
-      if (fromCollection || (dtype != DumpType.compound)) {
-        qn = startElement(xml, getClass(), dCl);
-      }
+    if (fromCollection || (dtype != DumpType.compound)) {
+      qn = startElement(xml, getClass(), dCl);
+    }
 
-      Collection<ComparableMethod> ms = findGetters(dCl, dtype);
+    final Collection<ComparableMethod> ms = findGetters(dCl, dtype);
 
-      if (firstMethods != null) {
-        doFirstMethods:
-        for (String methodName: firstMethods) {
-          for (ComparableMethod cm: ms) {
-            Method m = cm.m;
+    if (firstMethods != null) {
+      doFirstMethods:
+      for (final String methodName: firstMethods) {
+        for (final ComparableMethod cm: ms) {
+          final Method m = cm.m;
 
-            if (methodName.equals(m.getName())) {
-              Dump d = m.getAnnotation(Dump.class);
+          if (methodName.equals(m.getName())) {
+            final Dump d = m.getAnnotation(Dump.class);
 
-              dumpValue(xml, m, d, m.invoke(this, (Object[])null), fromCollection);
-
-              continue doFirstMethods;
+            try {
+              dumpValue(xml, m, d,
+                        m.invoke(this, (Object[])null), fromCollection);
+            } catch (final  IllegalAccessException
+                            | InvocationTargetException e) {
+              throw new BedeworkDatabaseException(e);
             }
+
+            continue doFirstMethods;
           }
-
-          error("Listed first field has no corresponding getter: " + methodName);
-        }
-      }
-
-      for (ComparableMethod cm: ms) {
-        Method m = cm.m;
-
-        if ((noDumpMethods != null) &&
-            noDumpMethods.contains(fieldName(m.getName()))) {
-          continue;
         }
 
-        if ((firstMethods != null) &&
-            firstMethods.contains(m.getName())) {
-          continue;
-        }
+        error("Listed first field has no corresponding getter: " +
+                      methodName);
+      }
+    }
 
-        Dump d = m.getAnnotation(Dump.class);
+    for (final ComparableMethod cm: ms) {
+      final Method m = cm.m;
 
-        dumpValue(xml, m, d, m.invoke(this, (Object[])null), fromCollection);
+      if ((noDumpMethods != null) &&
+              noDumpMethods.contains(fieldName(m.getName()))) {
+        continue;
       }
 
-      if (qn != null) {
-        closeElement(xml, qn);
+      if ((firstMethods != null) &&
+              firstMethods.contains(m.getName())) {
+        continue;
       }
-    } catch (HibException cfe) {
-      throw cfe;
-    } catch (Throwable t) {
-      throw new HibException(t);
+
+      final Dump d = m.getAnnotation(Dump.class);
+
+      try {
+        dumpValue(xml, m, d,
+                  m.invoke(this, (Object[])null), fromCollection);
+      } catch (final  IllegalAccessException
+                      | InvocationTargetException e) {
+        throw new BedeworkDatabaseException(e);
+      }
+    }
+
+    if (qn != null) {
+      closeElement(xml, qn);
     }
   }
 
@@ -172,35 +192,35 @@ public class DumpEntity<T> implements Logged {
    *                   Private methods
    * ==================================================================== */
 
-  private boolean dumpValue(final XmlEmit xml, final Method m, final Dump d,
+  private boolean dumpValue(final XmlEmit xml,
+                            final Method m,
+                            final Dump d,
                             final Object methVal,
-                            final boolean fromCollection) throws Throwable {
+                            final boolean fromCollection) {
     /* We always open the methodName or elementName tag if this is the method
      * value.
      *
      * If this is an element from a collection we generally don't want a tag.
      *
-     * We do open a tag if the annottaion specifies a collectionElementName
+     * We do open a tag if the annotation specifies a collectionElementName
      */
-    if (methVal instanceof DumpEntity) {
-      DumpEntity de = (DumpEntity)methVal;
-
+    if (methVal instanceof final DumpEntity<?> de) {
       if (!de.hasDumpValue()) {
         return false;
       }
 
-      boolean compound = (d!= null) && d.compound();
+      final boolean compound = (d!= null) && d.compound();
 
-      QName mqn = startElement(xml, m, d, fromCollection);
+      final QName mqn = startElement(xml, m, d, fromCollection);
 
-      DumpType dt;
+      final DumpType dt;
       if (compound) {
         dt = DumpType.compound;
       } else {
         dt = DumpType.reference;
       }
 
-      de.dump(xml, dt);
+      de.dump(xml, dt, false);
 
       if (mqn != null) {
         closeElement(xml, mqn);
@@ -209,18 +229,16 @@ public class DumpEntity<T> implements Logged {
       return true;
     }
 
-    if (methVal instanceof Collection) {
-      Collection c = (Collection)methVal;
-
+    if (methVal instanceof final Collection<?> c) {
       if (c.isEmpty()) {
         return false;
       }
 
       QName mqn = null;
 
-      for (Object o: c) {
-        if ((o instanceof DumpEntity) &&
-            (!((DumpEntity)o).hasDumpValue())) {
+      for (final Object o: c) {
+        if ((o instanceof final DumpEntity<?> de) &&
+            (!de.hasDumpValue())) {
           continue;
         }
 
@@ -243,36 +261,32 @@ public class DumpEntity<T> implements Logged {
     return true;
   }
 
-  private QName startElement(final XmlEmit xml, final Class c, final Dump d) throws HibException {
-    try {
-      QName qn;
+  private QName startElement(final XmlEmit xml,
+                             final Class<?> c,
+                             final Dump d) {
+    final QName qn;
 
-      if (d == null) {
-        qn = new QName(c.getName());
-      } else {
-        qn = new QName(d.elementName());
-      }
-
-      xml.openTag(qn);
-      return qn;
-    } catch (Throwable t) {
-      throw new HibException(t);
+    if (d == null) {
+      qn = new QName(c.getName());
+    } else {
+      qn = new QName(d.elementName());
     }
+
+    xml.openTag(qn);
+    return qn;
   }
 
-  private QName startElement(final XmlEmit xml, final Method m, final Dump d,
-                             final boolean fromCollection) throws HibException {
-    try {
-      QName qn = getTag(m, d, fromCollection);
+  private QName startElement(final XmlEmit xml,
+                             final Method m,
+                             final Dump d,
+                             final boolean fromCollection) {
+    final QName qn = getTag(m, d, fromCollection);
 
-      if (qn != null) {
-        xml.openTag(qn);
-      }
-
-      return qn;
-    } catch (Throwable t) {
-      throw new HibException(t);
+    if (qn != null) {
+      xml.openTag(qn);
     }
+
+    return qn;
   }
 
   private QName getTag(final Method m, final Dump d,
@@ -281,10 +295,10 @@ public class DumpEntity<T> implements Logged {
 
     if (d != null) {
       if (!fromCollection) {
-        if (d.elementName().length() > 0) {
+        if (!d.elementName().isEmpty()) {
           tagName = d.elementName();
         }
-      } else if (d.collectionElementName().length() > 0) {
+      } else if (!d.collectionElementName().isEmpty()) {
         tagName = d.collectionElementName();
       }
     }
@@ -302,43 +316,36 @@ public class DumpEntity<T> implements Logged {
 
   private void property(final XmlEmit xml, final Method m,
                         final Dump d, final Object p,
-                        final boolean fromCollection) throws HibException {
+                        final boolean fromCollection) {
     if (p == null) {
       return;
     }
 
-    try {
-      QName qn = getTag(m, d, fromCollection);
+    QName qn = getTag(m, d, fromCollection);
 
-      if (qn == null) {
-        /* Collection and no collection element name specified */
-        qn = new QName(p.getClass().getName());
-      }
+    if (qn == null) {
+      /* Collection and no collection element name specified */
+      qn = new QName(p.getClass().getName());
+    }
 
-      String sval;
+    final String sval;
 
-      if (p instanceof char[]) {
-        sval = new String((char[])p);
-      } else {
-        sval = String.valueOf(p);
-      }
+    if (p instanceof char[]) {
+      sval = new String((char[])p);
+    } else {
+      sval = String.valueOf(p);
+    }
 
-      if ((sval.indexOf('&') < 0) && (sval.indexOf('<') < 0)) {
-        xml.property(qn, sval);
-      } else {
-        xml.cdataProperty(qn, sval);
-      }
-    } catch (Throwable t) {
-      throw new HibException(t);
+    if ((sval.indexOf('&') < 0) && (sval.indexOf('<') < 0)) {
+      xml.property(qn, sval);
+    } else {
+      xml.cdataProperty(qn, sval);
     }
   }
 
-  private void closeElement(final XmlEmit xml, final QName qn) throws HibException {
-    try {
-      xml.closeTag(qn);
-    } catch (Throwable t) {
-      throw new HibException(t);
-    }
+  private void closeElement(final XmlEmit xml,
+                            final QName qn) {
+    xml.closeTag(qn);
   }
 
   private static class ComparableMethod implements Comparable<ComparableMethod> {
@@ -348,30 +355,31 @@ public class DumpEntity<T> implements Logged {
       this.m = m;
     }
 
+    @Override
     public int compareTo(final ComparableMethod that) {
       return this.m.getName().compareTo(that.m.getName());
     }
   }
 
   private Collection<ComparableMethod> findGetters(final Dump d,
-                                                   final DumpType dt) throws HibException {
-    Method[] meths = getClass().getMethods();
-    Collection<ComparableMethod> getters = new TreeSet<ComparableMethod>();
+                                                   final DumpType dt) {
+    final Method[] meths = getClass().getMethods();
+    final Collection<ComparableMethod> getters = new TreeSet<>();
     Collection<String> keyMethods = null;
 
     if (dt == DumpType.reference) {
       if ((d == null) || (d.keyFields().length == 0)) {
         error("No key fields defined for class " + getClass().getCanonicalName());
-        throw new HibException("noKeyFields");
+        throw new BedeworkDatabaseException("noKeyFields");
       }
-      keyMethods = new ArrayList<String>();
-      for (String f: d.keyFields()) {
+      keyMethods = new ArrayList<>();
+      for (final String f: d.keyFields()) {
         keyMethods.add(methodName(f));
       }
     }
 
-    for (Method m : meths) {
-      String mname = m.getName();
+    for (final Method m : meths) {
+      final String mname = m.getName();
 
       if (mname.length() < 4) {
         continue;
@@ -388,7 +396,7 @@ public class DumpEntity<T> implements Logged {
       }
 
       /* No parameters */
-      Class[] parClasses = m.getParameterTypes();
+      final Class<?>[] parClasses = m.getParameterTypes();
       if (parClasses.length != 0) {
         continue;
       }
@@ -430,7 +438,7 @@ public class DumpEntity<T> implements Logged {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

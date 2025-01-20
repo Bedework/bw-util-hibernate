@@ -18,6 +18,8 @@
 */
 package org.bedework.util.hibernate;
 
+import org.bedework.base.exc.persist.BedeworkDatabaseException;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -35,10 +37,9 @@ public class HibSessionFactory {
   /**
    * @param hibProps possibly null list of hibernate properties
    * @return the SessionFactory
-   * @throws HibException on fatal error
    */
   public static SessionFactory getSessionFactory(
-          final List<String> hibProps) throws HibException {
+          final List<String> hibProps) {
     /* Get a new hibernate session factory. This is configured from an
        * application resource hibernate.cfg.xml together with some run time values
        */
@@ -59,7 +60,7 @@ public class HibSessionFactory {
 
       return conf.buildSessionFactory();
     } catch (final Throwable t) {
-      throw new HibException(t);
+      throw new BedeworkDatabaseException(t);
     }
   }
 }
